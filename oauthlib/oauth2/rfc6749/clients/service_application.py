@@ -17,7 +17,7 @@ from .base import Client
 class ServiceApplicationClient(Client):
     """A public client utilizing the JWT bearer grant.
 
-    JWT bearer tokes can be used to request an access token when a client
+    JWT bearer tokens can be used to request an access token when a client
     wishes to utilize an existing trust relationship, expressed through the
     semantics of (and digital signature or keyed message digest calculated
     over) the JWT, without a direct user approval step at the authorization
@@ -91,7 +91,7 @@ class ServiceApplicationClient(Client):
                          ``https://provider.com/oauth2/token``.
 
         :param expires_at: A unix expiration timestamp for the JWT. Defaults
-                           to an hour from now, i.e. ``time.time() + 3600``.
+                           to an hour from now, i.e. ``round(time.time()) + 3600``.
 
         :param issued_at: A unix timestamp of when the JWT was created.
                           Defaults to now, i.e. ``time.time()``.
@@ -149,7 +149,7 @@ class ServiceApplicationClient(Client):
 
         .. _`Section 3.2.1`: https://tools.ietf.org/html/rfc6749#section-3.2.1
         """
-        import jwt
+        import jwt  # noqa: PLC0415
 
         key = private_key or self.private_key
         if not key:

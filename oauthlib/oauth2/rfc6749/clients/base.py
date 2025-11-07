@@ -8,7 +8,6 @@ for consuming OAuth 2.0 RFC6749.
 """
 import base64
 import hashlib
-import re
 import time
 import warnings
 
@@ -18,6 +17,7 @@ from oauthlib.oauth2.rfc6749.errors import (
     InsecureTransportError, TokenExpiredError,
 )
 from oauthlib.oauth2.rfc6749.parameters import (
+    parse_expires,
     parse_token_response, prepare_token_request,
     prepare_token_revocation_request,
 )
@@ -490,11 +490,7 @@ class Client:
         if not length <= 128:
             raise ValueError("Length must be less than or equal to 128")
 
-        allowed_characters = re.compile('^[A-Za-z0-9-._~]')
         code_verifier = generate_token(length, UNICODE_ASCII_CHARACTER_SET + "-._~")
-
-        if not re.search(allowed_characters, code_verifier):
-            raise ValueError("code_verifier contains invalid characters")
 
         self.code_verifier = code_verifier
 
@@ -586,15 +582,13 @@ class Client:
         if 'token_type' in response:
             self.token_type = response.get('token_type')
 
-        if 'expires_in' in response:
-            self.expires_in = response.get('expires_in')
-            self._expires_at = round(time.time()) + int(self.expires_in)
-
-        if 'expires_at' in response:
-            try:
-                self._expires_at = round(float(response.get('expires_at')))
-            except:
-                self._expires_at = None
+        vin, vat, v_at = parse_expires(response)
+        if vin:
+            self.expires_in = vin
+        if vat:
+            self.expires_at = vat
+        if v_at:
+            self._expires_at = v_at
 
         if 'mac_key' in response:
             self.mac_key = response.get('mac_key')

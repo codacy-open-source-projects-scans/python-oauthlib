@@ -23,7 +23,7 @@ they lock the oauthlib version in ``setup.py`` and release anyway.
 Unittests might not be enough and as an extra measure we will create an
 OAuthLib release issue on Github at least 2 days prior to release detailing the
 changes and pings the primary contacts for each downstream project.  Please
-respond within those 2 days if you have major concerns. 
+respond within those 2 days if you have major concerns.
 
 How to get on the notifications list
 ------------------------------------
@@ -38,7 +38,7 @@ When is the next release?
 -------------------------
 
 Releases have been sporadic at best and I don't think that will change soon.
-However, if you think it's time for a new release don't hesitate to open a 
+However, if you think it's time for a new release don't hesitate to open a
 new issue asking about it.
 
 A note on versioning
@@ -51,3 +51,35 @@ Minor point (1.1.0) releases will introduce non API breaking new features and
 changes. Bug releases (1.0.1) will include minor fixes that needs to be
 released quickly (e.g. after a bigger release unintentionally introduced a
 bug).
+
+For maintainer - Publishing a newer version
+--------------------------------------------
+
+List of tasks to do a release from a maintainer point of view:
+
+  - Create a Branch ``xyz-release``
+  - Update ``oauthlib/__init__.py`` version
+  - Update ``CHANGELOG.rst`` accordingly
+  - Review Github Issues and PR, and associate the milestone of the version
+  - Run ``make`` to cover the release readiness
+  - Create a PR to let downstreams developers test their apps and comments
+  - Create a tag and push tag, it will automatically publish the release to pypi
+  - Create a release with GitHub Releases
+  - Merge PR, close Github milestone
+
+In case of issues with CICD and a manual publish is required, follow these steps:
+
+  - Install dependencies `pip install build twine`
+  - Run `python -m build`
+  - Run `twine check dist/*`
+  - Run `twine upload dist/*`
+
+Initial setup:
+  - Because we currently use "trusted publisher", it does not require to setup
+    token. However, OIDC Authorization flow has to be configured in `pypi publishing`.
+
+    - During setup, refer to the environment and name of the workflow directly in the code.
+  - GitHub Restrictions: tag protection must be enabled
+
+
+.. _`pypi publishing`: https://pypi.org/manage/project/oauthlib/settings/publishing/
